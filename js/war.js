@@ -1,4 +1,4 @@
-/* 与大肥鱼一起下象棋 · 战棋模式
+﻿/* 与大肥鱼一起下象棋 · 战棋模式
  * 80×80 地形战棋：经典棋子、行动值、地形消耗、村庄/城池经济、士隐身/相侦测、三档 AI、沙盘、联机房间。
  * 独立于象棋对局，不依赖 AI 接口；大肥鱼在这里是对手。
  */
@@ -3956,7 +3956,7 @@
           else o.pollStopped = true;
           return;
         }
-        setTimeout(tick, 50);
+        setTimeout(tick, 1200);
       }).catch(function () {
         if (timer) clearTimeout(timer);
         if (S.online === o && !o.pollStopped) setTimeout(tick, 1200);
@@ -4606,6 +4606,7 @@
     _test: { UNITS: UNITS, TERRAIN: TERRAIN, W: W, H: H, computeReach: computeReach, pathTo: pathTo, canAttack: canAttack, attackDamage: attackDamage, genMap: genMap, mapCounts: mapCounts, serializeState: serializeState, deserializeState: deserializeState, startGame: startGame, selectUnit: selectUnit, clickCell: clickCell, endTurn: endTurn, moveUnit: moveUnit, cost2: cost2, beginTurn: beginTurn, doAttack: doAttack, doHeal: doHeal, kingGold: kingGold, occupy: occupy, collectBuilding: collectBuilding, produce: produce, checkOver: checkOver, goldSources: goldSources, rawUnitAt: rawUnitAt, unitVisible: unitVisible, createRoom: createRoom, joinRoom: joinRoom, startOnlineGame: startOnlineGame, sandboxPaint: sandboxPaint, startSandbox: startSandbox, saveSandbox: saveSandbox, readLib: readLib, cameraToCell: cameraToCell, focusCell: focusCell, hasAnim: hasAnim }
   };
 })();
+
 
 
 

@@ -1,0 +1,8 @@
+{
+  "regions": ["sin1"],
+  "functions": {
+    "api/online/*.js": {
+      "maxDuration": 10
+    }
+  }
+}
