@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#dcecf9" />
+<title>与大肥鱼一起下象棋</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23bfe2ff'/%3E%3Ctext x='50' y='55' font-size='54' text-anchor='middle' dominant-baseline='middle' fill='%2314507f' font-family='KaiTi,serif'%3E鱼%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-screen="lobby">
+
+<div class="room-bg"><img src="assets/fish/room.jpg" alt="大肥鱼的房间" /></div>
+<div class="vignette"></div>
+
+<!-- ==================== 大厅 ==================== -->
+<section id="lobby" class="screen lobby show">
+  <img class="deco tail" src="assets/ui/tail.png" alt="" />
+  <img class="deco bow" src="assets/ui/bow.png" alt="" />
+  <img class="deco badge" src="assets/ui/badge.png" alt="" />
+  <img class="deco memo" src="assets/ui/memo.png" alt="" />
+  <img class="deco chibi" src="assets/ui/chibi_face.png" alt="" />
+
+  <div class="lobby-fish"><img id="lobbyFish" src="assets/fish/fish.png" alt="大肥鱼" /></div>
+
+  <header class="lobby-head">
+    <h1 class="game-title" id="gameTitle" title="点一下">与大肥鱼下象棋</h1>
+    <p class="author" id="authorLine" hidden>作者：三天左右了吧</p>
+    <p class="tagline">房间准备好了 · 棋也摆好了 · 只差你坐下</p>
+  </header>
+
+  <button class="world-clock lobby-clock" data-clock type="button" title="大肥鱼的作息"></button>
+
+  <nav class="lobby-menu">
+    <button class="menu-btn classic" data-act="classic">
+      <b>经典玩法</b><i>传统中国象棋 · 三档难度</i>
+    </button>
+    <button class="menu-btn awake" data-act="awake">
+      <b>觉醒之战</b><i>经典之上 · 七条觉醒走法</i>
+    </button>
+    <button class="menu-btn war" data-act="war">
+      <b>战棋模式</b><i>80×80 大地图 · 地形与城池</i>
+    </button>
+    <div class="menu-sub">
+      <button class="menu-chip" data-act="replay">复盘模式</button>
+      <button class="menu-chip" data-act="sandbox">沙盘模式</button>
+      <button class="menu-chip" data-act="sandboxLib">沙盘保存库</button>
+    </div>
+    <button class="menu-btn chat" data-act="chat">
+      <b>与大肥鱼好好聊聊</b><i>说说今天，或者只是坐一会儿</i>
+    </button>
+  </nav>
+
+  <div class="lobby-aff" id="lobbyAff" title="好感度">
+    <span class="heart">♡</span>
+    <div>
+      <b id="lobbyAffName">Lv.1 初识</b>
+      <div class="mini-bar"><i id="lobbyAffFill"></i></div>
+    </div>
+    <span class="tiny" id="lobbyAffText">0 / 100</span>
+  </div>
+
+  <footer class="lobby-foot">
+    <button class="link ai-chip off" id="aiChip" title="连接 AI">AI 未连接</button>
+    <button class="link" id="btnThanks">素材感谢名单</button>
+    <button class="link" id="btnSettings">设置</button>
+    <span class="ver">v1.1</span>
+  </footer>
+</section>
+
+<!-- ==================== 对局 ==================== -->
+<section id="game" class="screen game">
+  <header class="game-top">
+    <button class="pill" id="btnGameBack">‹ 大厅</button>
+    <span class="badge" id="modeBadge">觉醒之战</span>
+    <span class="badge lv" id="levelBadge">高级</span>
+    <span class="badge ai-badge off" id="aiBadge">AI 未连接</span>
+    <div class="spacer"></div>
+    <button class="world-clock head-clock" data-clock type="button" title="大肥鱼的作息"></button>
+    <button class="pill" id="btnGameRules">规则</button>
+    <button class="pill icon" id="btnGameSettings" title="设置">⚙</button>
+  </header>
+
+  <div class="fish-stage"><img id="gameFish" src="assets/fish/fish.png" alt="大肥鱼" data-mood="normal" /></div>
+
+  <div class="bubble" id="gameBubble">
+    <img class="bub-emo" id="gameBubEmo" alt="" hidden />
+    <div class="bub-panel">
+      <span class="bub-name">大肥鱼</span>
+      <p id="gameBubText"></p>
+    </div>
+    <i class="bub-tail"></i>
+  </div>
+
+  <aside class="panel left" id="awakePanel">
+    <div class="panel-head">
+      <h3>觉醒状态</h3>
+      <span class="tiny" id="kingOutNote" hidden>已出宫</span>
+    </div>
+    <div class="aw-chips" id="awakeChips"></div>
+    <h3 class="sub">觉醒规则 <span class="tiny">点击看细节</span></h3>
+    <ul class="aw-rules" id="awakeRules"></ul>
+  </aside>
+
+  <main class="board-col">
+    <div class="board-frame">
+      <svg id="boardSvg" viewBox="-34 -34 968 1068" preserveAspectRatio="xMidYMid meet" aria-label="象棋棋盘"></svg>
+    </div>
+    <div class="say-wrap">
+      <div class="user-line" id="userLine" hidden></div>
+      <form class="say-bar" id="sayForm" autocomplete="off">
+        <input id="sayInput" maxlength="200" placeholder="和大肥鱼说点什么…" autocomplete="off" />
+        <button class="btn tiny send" type="submit">发送</button>
+        <button class="ico" type="button" id="btnPat" title="摸摸头 +10">摸摸</button>
+        <button class="ico" type="button" id="btnHug" title="抱抱 +20">抱抱</button>
+      </form>
+    </div>
+  </main>
+
+  <aside class="panel right">
+    <div class="wr-card">
+      <h3>胜率</h3>
+      <div class="wr-row"><span>大肥鱼</span><b id="winFish">50%</b></div>
+      <div class="wr-bar"><i id="winFill"></i></div>
+      <div class="wr-row you"><span>你</span><b id="winYou">50%</b></div>
+      <p class="tiny" id="winNote">势均力敌</p>
+      <div class="wr-hist" id="winHistBox" hidden>
+        <svg id="winSpark" viewBox="0 0 100 24" preserveAspectRatio="none" aria-label="胜率走势">
+          <line x1="0" y1="12" x2="100" y2="12" class="wr-mid"></line>
+          <path id="winSparkArea" class="wr-area"></path>
+          <path id="winSparkLine" class="wr-line"></path>
+        </svg>
+        <span id="winDelta" class="wr-delta flat">0%</span>
+      </div>
+      <p class="tiny" id="recordLine"></p>
+    </div>
+    <div class="turn-line">
+      <i class="dot"></i><span id="turnText">轮到你走</span>
+      <span class="flag" id="checkFlag" hidden></span>
+      <span class="flag think" id="thinkFlag" hidden>思考中<i></i><i></i><i></i></span>
+    </div>
+    <div class="bonus-bar" id="bonusBar" hidden>
+      <span id="bonusText"></span>
+      <button class="mini" id="btnSkipBonus" type="button">跳过</button>
+    </div>
+    <div class="game-acts">
+      <button class="mini" id="btnUndo">悔棋</button>
+      <button class="mini" id="btnHint">提示</button>
+      <button class="mini" id="btnRestart">重开</button>
+      <button class="mini danger" id="btnResign">认输</button>
+    </div>
+    <h3 class="sub">棋谱</h3>
+    <ol class="move-list" id="moveList"></ol>
+  </aside>
+</section>
+
+<!-- ==================== 聊聊 ==================== -->
+<section id="chat" class="screen chat">
+  <header class="game-top">
+    <button class="pill" id="chatBack">‹ 大厅</button>
+    <span class="badge">与大肥鱼好好聊聊</span>
+    <span class="badge ai-badge off" id="chatAiBadge">AI 未连接</span>
+    <div class="spacer"></div>
+    <button class="world-clock head-clock" data-clock type="button" title="大肥鱼的作息"></button>
+    <button class="pill" id="btnChatSettings" title="设置">⚙</button>
+  </header>
+
+  <div class="fish-stage chat-stage"><img id="chatFish" src="assets/fish/fish.png" alt="大肥鱼" data-mood="normal" /></div>
+
+  <div class="bubble" id="chatBubble">
+    <img class="bub-emo" id="chatBubEmo" alt="" hidden />
+    <div class="bub-panel">
+      <span class="bub-name">大肥鱼</span>
+      <p id="chatBubText"></p>
+    </div>
+    <i class="bub-tail"></i>
+  </div>
+
+  <aside class="chat-left">
+    <div class="chat-log" id="chatLog"></div>
+    <div class="quick" id="chatQuick">
+      <button type="button" data-say="今天想吃什么？">今天想吃什么？</button>
+      <button type="button" data-say="夸夸我">夸夸我</button>
+      <button type="button" data-say="陪我下一盘棋吧">陪我下一盘棋吧</button>
+      <button type="button" data-say="今天有点累">今天有点累</button>
+    </div>
+    <form class="say-bar" id="chatForm" autocomplete="off">
+      <input id="chatInput" maxlength="300" placeholder="想说什么都可以…" autocomplete="off" />
+      <button class="btn tiny send" id="chatSend" type="submit">发送</button>
+    </form>
+    <div class="chat-actions">
+      <button class="mini" id="btnChatPat">摸摸头 +10</button>
+      <button class="mini" id="btnChatHug">抱抱 +20</button>
+    </div>
+  </aside>
+
+  <aside class="panel right aff-panel" id="affPanel">
+    <h3>好感度</h3>
+    <div class="aff-head"><b id="affLevel">Lv.1</b><span id="affName">初识</span></div>
+    <div class="aff-bar"><i id="affExpFill"></i></div>
+    <p class="tiny" id="affExpText">0 / 100</p>
+    <p class="aff-desc" id="affDesc"></p>
+    <p class="tiny" id="affNext"></p>
+    <div class="aff-stats" id="affStats"></div>
+    <p class="aff-tips">聊天 +2 · 摸摸 +10 · 抱抱 +20</p>
+    <p class="tiny sick-tip" id="affSickTip" hidden>病娇状态：聊 4 次正常话题可恢复</p>
+    <button class="mini" id="btnAffHelp">好感度规则</button>
+  </aside>
+</section>
+
+<!-- ==================== 沙盘 ==================== -->
+<section id="sandbox" class="screen sandbox">
+  <header class="game-top">
+    <button class="pill" id="btnSbBack">‹ 大厅</button>
+    <span class="badge">沙盘模式</span>
+    <span class="badge name" id="sbName">新沙盘</span>
+    <div class="spacer"></div>
+    <button class="world-clock head-clock" data-clock type="button" title="大肥鱼的作息"></button>
+    <span class="tiny sb-top-tip">自由摆子 · 不按规则走棋</span>
+  </header>
+
+  <div class="sb-grid">
+    <div class="sb-board-wrap">
+      <div class="board-frame">
+        <svg id="sandboxSvg" viewBox="-34 -34 968 1068" preserveAspectRatio="xMidYMid meet" aria-label="沙盘棋盘"></svg>
+      </div>
+      <div class="sb-actions">
+        <button class="mini" id="btnSbClear">清空</button>
+        <button class="mini" id="btnSbTurn">红先</button>
+        <button class="mini" id="btnSbSave">保存到保存库</button>
+        <button class="mini primary" id="btnSbStart">用这个棋盘开局</button>
+        <button class="mini" id="btnSbLib">沙盘保存库</button>
+      </div>
+    </div>
+    <aside class="panel sb-side">
+      <h3>棋子 <span class="tiny" id="sbCount">0 枚</span></h3>
+      <div class="sb-palette" id="sbPalette"></div>
+      <h3 class="sub">检查</h3>
+      <div class="sb-errors" id="sbErrors"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- 选择浮层 -->
+<div class="choice-pop" id="choicePop" hidden>
+  <header><b id="choiceTitle">选择</b><button id="choiceClose" type="button" aria-label="关闭">×</button></header>
+  <p id="choiceLead"></p>
+  <div id="choiceList"></div>
+  <button id="choiceSkip" class="mini" type="button" hidden>跳过</button>
+</div>
+
+<!-- 请求浮层 -->
+<div class="request-pop" id="requestPop" hidden>
+  <img src="assets/fish/face.png" alt="大肥鱼" />
+  <div><b>大肥鱼的小请求</b><p id="reqText"></p></div>
+  <div class="req-acts">
+    <button id="reqYes" class="mini primary" type="button">好呀</button>
+    <button id="reqNo" class="mini" type="button">下次吧</button>
+  </div>
+</div>
+
+<div class="request-pop regret-pop" id="regretPop" hidden>
+  <img src="assets/fish/face.png" alt="大肥鱼" />
+  <div><b id="regretTitle">大肥鱼想悔棋</b><p id="regretText"></p></div>
+  <div class="req-acts">
+    <button id="regretYes" class="mini primary" type="button">让她悔</button>
+    <button id="regretNo" class="mini" type="button">不</button>
+  </div>
+</div>
+
+<section id="war" class="screen war-embed">
+  <iframe id="warFrame" src="war.html" title="战棋模式"></iframe>
+</section>
+
+<div id="toast" class="toast"></div>
+<div id="modalRoot"></div>
+
+<script src="js/rules.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/store.js"></script>
+<script src="js/time.js"></script>
+<script src="js/soul.js"></script>
+<script src="js/winrate.js"></script>
+<script src="js/fish.js"></script>
+<script src="js/board.js"></script>
+<script src="js/game.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/replay.js"></script>
+<script src="js/sandbox.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

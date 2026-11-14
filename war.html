@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>战棋模式 · 与大肥鱼一起下象棋</title>
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/war.css" />
+</head>
+<body data-screen="war">
+<div class="room-bg"><img src="assets/fish/room.jpg" alt="" /><div class="vignette"></div></div>
+
+<section id="war" class="war-screen">
+  <header class="war-top">
+    <a class="pill" id="warHome" href="index.html">‹ 大厅</a>
+    <span class="badge">战棋模式</span>
+    <span class="war-mode-name" id="warTopMode">选择玩法</span>
+    <span class="war-map-name" id="warTopMap"></span>
+    <span class="war-stat red" id="warTurnBadge">红方回合</span>
+    <div class="spacer"></div>
+    <span class="war-stat">回合 <b id="warRound">1</b></span>
+    <span class="war-stat red">红 <b id="warGold0">0</b></span>
+    <span class="war-stat black">黑 <b id="warGold1">0</b></span>
+    <button class="pill" id="warHelp" type="button">规则</button>
+    <button class="pill" id="warGameMenu" type="button">菜单</button>
+    <button class="pill primary" id="warEnd" type="button" disabled>结束回合</button>
+  </header>
+
+  <div class="sb-top" id="sbTop" hidden>
+    <button class="pill" id="sbExit" type="button">‹ 退出沙盘</button>
+    <span class="badge">战棋沙盘</span>
+    <label class="sb-size-label">画布
+      <input id="sbW" type="number" min="10" max="200" value="80" />
+      <span>×</span>
+      <input id="sbH" type="number" min="10" max="200" value="80" />
+      <button class="mini" id="sbApplySize" type="button">应用</button>
+    </label>
+    <label class="sb-scale-label">显示比例
+      <select id="sbScale">
+        <option value="0.75">75%</option>
+        <option value="1" selected>100%</option>
+        <option value="1.25">125%</option>
+        <option value="1.5">150%</option>
+      </select>
+    </label>
+    <div class="spacer"></div>
+    <button class="pill" id="sbTopUndo" type="button">撤回</button>
+    <button class="pill" id="sbSave" type="button">保存</button>
+    <button class="pill primary" id="sbPlay" type="button">用此地图游戏</button>
+  </div>
+
+  <main class="war-main">
+    <aside class="sb-left" id="sbLeft" hidden>
+      <section class="sb-block">
+        <h3>素材库</h3>
+        <div class="sb-tabs" id="sbLibTabs">
+          <button type="button" data-lib="terrain" class="on">地形</button>
+          <button type="button" data-lib="red">红方棋子</button>
+          <button type="button" data-lib="black">黑方棋子</button>
+          <button type="button" data-lib="bred">红方建筑</button>
+          <button type="button" data-lib="bblack">黑方建筑</button>
+          <button type="button" data-lib="bneutral">中立建筑</button>
+        </div>
+        <div class="sb-lib" id="sbLib"></div>
+      </section>
+      <section class="sb-block">
+        <h3>工具</h3>
+        <div class="sb-tools" id="sbTools"></div>
+      </section>
+      <section class="sb-block">
+        <h3>开发者模式</h3>
+        <div class="sb-dev" id="sbDev"></div>
+      </section>
+    </aside>
+
+    <div class="war-stage" id="warStage">
+      <canvas id="warCanvas"></canvas>
+      <div class="war-hint" id="warHint"></div>
+      <div class="war-toast" id="warToast"></div>
+      <div class="war-sandbox" id="warSandbox" hidden></div>
+    </div>
+
+    <aside class="sb-right" id="sbCenter" hidden>
+      <section class="sb-block">
+        <h3>小地图</h3>
+        <canvas id="sbMinimap" width="220" height="220"></canvas>
+        <p class="tiny">点击小地图跳转；点击素材计数可高亮</p>
+      </section>
+      <section class="sb-block sb-count-block">
+        <h3>素材计数</h3>
+        <div id="sbCounts"></div>
+      </section>
+    </aside>
+
+    <aside class="war-side">
+      <div class="war-fish-card">
+        <img id="warFishFace" src="assets/fish/face.png" alt="大肥鱼" />
+        <div class="war-fish-bubble" id="warFishLine">选一个玩法，我们开始吧。</div>
+      </div>
+      <div class="war-side-block" id="warUnit">
+        <h3>棋子</h3>
+        <p class="tiny">点棋子看行动范围，点地图移动或攻击。</p>
+      </div>
+      <div class="war-side-block">
+        <div class="war-side-title"><h3>地图</h3><span class="tiny" id="warMapInfo"></span></div>
+        <canvas id="warMinimap" width="180" height="180"></canvas>
+      </div>
+      <div class="war-side-block">
+        <h3>金币来源</h3>
+        <p class="tiny" id="warSources">红：将 ✓ · 村庄/城池 1<br>黑：将 ✓ · 村庄/城池 1</p>
+      </div>
+      <div class="war-side-block war-log-block">
+        <h3>战报</h3>
+        <div class="war-log" id="warLog"></div>
+      </div>
+      <div class="war-side-block war-legend">
+        <h3>图例</h3>
+        <p><i class="lg move"></i>可行走 <img class="lg-img" src="assets/war/attack.png" alt="" />可进攻 <i class="lg block"></i>被阻挡 <img class="lg-img" src="assets/war/threat.png" alt="" />容易被攻击</p>
+        <p class="tiny">80×80 地图；拖动地图，滚轮缩放；点小地图跳转。</p>
+      </div>
+    </aside>
+  </main>
+
+  <!-- 玩法菜单 -->
+  <div class="war-menu" id="warMenu">
+    <div class="war-menu-panel">
+      <div class="war-menu-head">
+        <h1>战棋模式</h1>
+        <p>80×80 大地图 · 地形消耗 · 城池村庄 · 经典棋子</p>
+        <button class="pill" id="warMenuHelp" type="button">玩法说明</button>
+      </div>
+      <div class="war-mode-cards" id="warModeCards">
+        <button class="war-mode-card" data-mode="online"><b>联机对战</b><i>两台电脑 / 不同浏览器</i></button>
+        <button class="war-mode-card" data-mode="hotseat"><b>双人对决</b><i>同一台电脑轮流走</i></button>
+        <button class="war-mode-card" data-mode="ai"><b>和大肥鱼玩</b><i>三档战棋 AI</i></button>
+        <button class="war-mode-card" data-mode="sandbox"><b>战棋沙盘</b><i>自由绘制地图、摆棋子</i></button>
+        <button class="war-mode-card" data-mode="library"><b>战棋沙盘保存库</b><i>读取已保存的地图</i></button>
+      </div>
+      <div class="war-options" id="warOptions"></div>
+      <div class="war-menu-foot">
+        <button class="btn small" id="warStart" type="button" disabled>开始</button>
+        <button class="pill" id="warMenuBack" type="button">回大厅</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="war-online" id="warOnline" hidden>
+    <div class="war-online-panel">
+      <h2>联机对战</h2>
+      <p class="tiny">房间号 <b id="olRoom">----</b></p>
+      <p class="tiny">服务器 <b id="olServer">----</b></p>
+      <button class="war-opt-btn" id="olInvite" type="button">复制跨电脑邀请链接</button>
+      <p id="olStatus">等待玩家加入</p>
+      <div id="olPlayers" class="ol-players"></div>
+      <div class="war-opt-row ol-actions">
+        <button class="war-opt-btn" id="olStart" type="button">开始游戏</button>
+        <button class="war-opt-btn" id="olEnter" type="button">进入游戏</button>
+        <button class="war-opt-btn" id="olRed" type="button">选择红方</button>
+        <button class="war-opt-btn" id="olBlack" type="button">选择黑方</button>
+      </div>
+      <p class="tiny" id="olHint"></p>
+      <button class="pill" id="olLeave" type="button">退出房间</button>
+    </div>
+  </div>
+
+  <div id="warModalRoot"></div>
+</section>
+
+<script src="js/war.js"></script>
+</body>
+</html>
